@@ -38,8 +38,9 @@ export async function POST(req) {
     const newUser = await prisma.user.create({
       data: {
         email: data.email,
-        password: hashedPassword, // This should ideally be hashed for security
+        password: hashedPassword,
         name: data.name,
+        role: "user" // Default role for new users
       },
     });
 

@@ -1,9 +1,12 @@
-import React from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function ProductCard({
-    id,
-    name,
+  id,
+  name,
   price,
   originalPrice,
   discount,
@@ -13,6 +16,51 @@ export default function ProductCard({
   buttonText = "Add To Cart",
   showDiscount = "no",
 }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true); // Ensure this is true only on client side
+  }, []);
+
+  const handleAddToCart = async () => {
+    if (!session && isMounted) {
+      // Redirect to login if not logged in
+      router.push('/login');
+      return;
+    }
+
+    // Call API to add product to cart
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Ensure cookies are sent
+        body: JSON.stringify({ productId: id, quantity: 1 }),
+      });
+  
+      // Log response status and headers
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+  
+      // Try to parse the response as JSON
+      const data = await response.json();
+      console.log('Response data:', data);
+  
+      if (response.ok) {
+        alert('Product added to cart!');
+      } else {
+        alert(data.message || 'Failed to add product to cart.');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
   return (
     <div className="p-4 w-64 bg-gray-100 rounded">
       {/* Product Image with Discount Badge and Action Buttons */}
@@ -37,7 +85,10 @@ export default function ProductCard({
         </div>
 
         {/* Hover Overlay for Add to Cart */}
-        <button className="absolute bottom-0 left-0 right-0 bg-black text-white text-center py-2 opacity-0 rounded-b group-hover:opacity-100 transition-opacity duration-300">
+        <button
+          onClick={handleAddToCart}
+          className="absolute bottom-0 left-0 right-0 bg-black text-white text-center py-2 opacity-0 rounded-b group-hover:opacity-100 transition-opacity duration-300"
+        >
           {buttonText}
         </button>
       </div>

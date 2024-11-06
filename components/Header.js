@@ -2,15 +2,37 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Inter, Poppins } from 'next/font/google';
-import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useState, useEffect, useRef } from 'react';
+import { signOut } from 'next-auth/react';
+
 
 const inter = Inter({ subsets: ['latin'] });
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600'] });
 
 export default function Header() {
+  const { data: session } = useSession();
+  console.log(session);
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const isActive = (path) => pathname === path;
 
@@ -41,23 +63,68 @@ export default function Header() {
         <Link href="/about" className={`pb-1 hover:scale-110 duration-150 ${isActive('/about') ? 'border-b border-black' : ''}`}>
           About
         </Link>
+        <Link href="/login" className={`pb-1 hover:scale-110 duration-150 ${isActive('/login') ? 'border-b border-black' : ''}`}>
+          Login
+        </Link>
         <Link href="/signup" className={`pb-1 hover:scale-110 duration-150 ${isActive('/signup') ? 'border-b border-black' : ''}`}>
           Sign Up
         </Link>
       </nav>
       
       <div className="hidden md:flex justify-between gap-3">
-        <div className="flex items-center bg-gray-100 rounded-md py-2 px-4 w-72">
-          <input
-            type="text"
-            placeholder="What are you looking for?"
-            className="px-3 py-1 bg-gray-100 flex-grow outline-none"    
-          />
-          <img src="/images/search.svg" alt="Search" className="scale-125" />
-        </div>
-        <img src="/images/heart.svg" alt="Heart" />
-        <img src="/images/cart.svg" alt="Cart" />
+      <div className="flex items-center bg-gray-100 rounded-md py-2 px-4 w-72">
+        <input
+          type="text"
+          placeholder="What are you looking for?"
+          className="px-3 py-1 bg-gray-100 flex-grow outline-none"
+        />
+        <img src="/images/search.svg" alt="Search" className="scale-125" />
       </div>
+      <div className="flex gap-2 justify-center items-center relative">
+        <img src="/images/heart.svg" alt="Heart" className="h-8 w-8" />
+        <Link href="/cart" className="relative">
+        <img src="/images/cart.svg" alt="Cart" className="h-8 w-8" />
+        </Link>
+
+        {/* User icon with dropdown */}
+        {session && (
+          <button onClick={toggleDropdown}>
+            <img src="/images/user.svg" alt="User" className="h-8 w-8 rounded-full" />
+          </button>
+        )}
+
+        {/* Dropdown menu */}
+        {dropdownOpen && (
+          <div
+            ref={dropdownRef}
+            className="absolute right-0 top-full w-60 bg-black opacity-90 text-white rounded-md shadow-lg z-10"
+          >
+            <div className="flex flex-col whitespace-nowrap">
+              <a href="/account" className="px-4 py-2 hover:bg-gray-700 flex items-center">
+                <img src="/images/user-white.svg" alt="Account" className="h-5 w-5 mr-4" />
+                Manage My Account
+              </a>
+              <a href="/orders" className="px-4 py-2 hover:bg-gray-700 flex items-center">
+                <img src="/images/order-white.svg" alt="Orders" className="h-5 w-5 mr-4" />
+                My Orders
+              </a>
+              <a href="/cancellations" className="px-4 py-2 hover:bg-gray-700 flex items-center">
+                <img src="/images/cancel-white.svg" alt="Cancellations" className="h-5 w-5 mr-4" />
+                My Cancellations
+              </a>
+              <a href="/reviews" className="px-4 py-2 hover:bg-gray-700 flex items-center">
+                <img src="/images/star-white.svg" alt="Reviews" className="h-5 w-5 mr-4" />
+                My Reviews
+              </a>
+              <button onClick={() => signOut({ callbackUrl: '/' })} className="px-4 py-2 hover:bg-gray-700 flex items-center">
+                  <img src="/images/logout.svg" alt="Logout" className="h-5 w-5 mr-4" />
+                  Logout
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
 
       {/* Sidebar for Mobile */}
       <div
@@ -99,4 +166,14 @@ export default function Header() {
       )}
     </header>
   );
+}
+
+
+export function ExampleTest() {
+  const { data: session } = useSession();
+  
+  if (session) {
+    return <p>Signed in as {session.user.email}</p>;
+  }
+  return <p>Not signed in</p>;
 }
