@@ -7,7 +7,6 @@ export default function CategoryPage({ params }) {
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
 
-  // Set category once params resolve
   useEffect(() => {
     (async () => {
       const resolvedParams = await params;
@@ -15,7 +14,6 @@ export default function CategoryPage({ params }) {
     })();
   }, [params]);
 
-  // Fetch products based on the resolved category
   useEffect(() => {
     if (category) {
       fetch(`https://fakestoreapi.com/products/category/${category}`)

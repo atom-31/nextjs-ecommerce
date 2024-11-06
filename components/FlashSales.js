@@ -7,11 +7,10 @@ import Link from 'next/link';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function FlashSales() {
-  const [timeLeft, setTimeLeft] = useState(null); // Start as null to avoid SSR mismatch
+  const [timeLeft, setTimeLeft] = useState(null); 
   const [products, setProducts] = useState([]);
   const scrollContainerRef = useRef(null);
 
-  // Initialize Countdown Timer only after mounting on the client
   useEffect(() => {
     const initialTime = {
       days: 3,
@@ -38,7 +37,6 @@ export default function FlashSales() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch products from the API only on the client
   useEffect(() => {
     fetch('https://fakestoreapi.com/products?limit=8')
       .then((res) => res.json())
@@ -58,7 +56,6 @@ export default function FlashSales() {
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
-  // Scroll functions
   const scrollLeft = () => {
     scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
   };

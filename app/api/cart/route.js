@@ -1,4 +1,3 @@
-// app/api/cart/route.js
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
@@ -19,20 +18,17 @@ export async function POST(request) {
   }
 
   try {
-    // Check if item already in cart
     const existingCartItem = await prisma.cart.findFirst({
       where: { userId, productId },
     });
 
     if (existingCartItem) {
-      // Update quantity if item exists
       const updatedCartItem = await prisma.cart.update({
         where: { id: existingCartItem.id },
         data: { quantity: existingCartItem.quantity + quantity },
       });
       return NextResponse.json(updatedCartItem, { status: 200 });
     } else {
-      // Add new item to cart
       const newCartItem = await prisma.cart.create({
         data: { userId, productId, quantity },
       });
@@ -58,7 +54,6 @@ export async function GET(request) {
   const userId = session.user.id;
 
   try {
-    // Fetch cart items for the current user
     const cartItems = await prisma.cart.findMany({
       where: { userId },
       select: {

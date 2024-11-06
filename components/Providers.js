@@ -1,7 +1,7 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
-import { AuthProvider } from '../lib/authContext'; // Adjust the import path accordingly
+import { AuthProvider } from '../lib/authContext';
 import { CartProvider } from '@/lib/cartContext';
 
 export default function Providers({ children }) {

@@ -1,8 +1,7 @@
-// app/api/cart/count/route.js
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // Adjust the path to your Prisma client
+import prisma from '@/lib/prisma'; 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth'; // Adjust path to your auth options
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request) {
   const session = await getServerSession(authOptions);
@@ -14,13 +13,11 @@ export async function GET(request) {
   const userId = session.user.id;
 
   try {
-    // Fetch the total quantity of items in the user's cart
     const cartItems = await prisma.cart.findMany({
       where: { userId },
       select: { quantity: true }
     });
 
-    // Calculate the total count of items
     const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return NextResponse.json({ count: totalCount }, { status: 200 });

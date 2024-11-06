@@ -13,7 +13,6 @@ export default function ProductPage({ params }) {
   const resolvedParams = React.use(params);
   const { id } = resolvedParams;
 
-  // Fetch product details based on the product ID from URL
   useEffect(() => {
     handleColorSelect('red');
     handleSizeSelect('M');
@@ -23,7 +22,6 @@ export default function ProductPage({ params }) {
         .then((data) => {
           setProduct(data);
 
-          // Fetch related products (using category or any related endpoint as per API availability)
           fetch(`https://fakestoreapi.com/products/category/${data.category}?limit=4`)
             .then((res) => res.json())
             .then((related) => {
@@ -159,11 +157,11 @@ export default function ProductPage({ params }) {
               key={relatedProduct.id}
               name={relatedProduct.title}
               price={`$${relatedProduct.price}`}
-              originalPrice={`$${(relatedProduct.price * 1.2).toFixed(2)}`} // Example markup for original price
+              originalPrice={`$${(relatedProduct.price * 1.2).toFixed(2)}`} 
               discount={`-${Math.floor((1 - relatedProduct.price / (relatedProduct.price * 1.2)) * 100)}%`}
               image={relatedProduct.image}
-              rating={Math.floor(Math.random() * 5) + 1} // Example random rating
-              reviews={Math.floor(Math.random() * 100) + 1} // Example random reviews
+              rating={Math.floor(Math.random() * 5) + 1} 
+              reviews={Math.floor(Math.random() * 100) + 1} 
               showDiscount="yes"
             />
           ))}

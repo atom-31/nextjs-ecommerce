@@ -12,7 +12,7 @@ const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600'] });
 
 export default function Header() {
   const { data: session } = useSession();
-  const { cartCount } = useCart(); // Use cart count from context
+  const { cartCount } = useCart(); 
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);

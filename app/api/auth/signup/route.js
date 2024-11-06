@@ -6,11 +6,9 @@ const prisma = new PrismaClient();
 
 export async function POST(req) {
   try {
-    // Parse the incoming request payload
     const data = await req.json();
     console.log("Received data:", data);
 
-    // Validate required fields
     if (!data || !data.email || !data.password || !data.name) {
       console.error("Missing required fields:", data);
       return new Response(
@@ -19,7 +17,6 @@ export async function POST(req) {
       );
     }
 
-    // Check if the user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email },
     });
@@ -34,19 +31,17 @@ export async function POST(req) {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Create the user in the database
     const newUser = await prisma.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
         name: data.name,
-        role: "user" // Default role for new users
+        role: "user" 
       },
     });
 
     console.log("User created successfully:", newUser);
 
-    // Return a successful response
     return new Response(
       JSON.stringify({ message: 'User created successfully', user: newUser }),
       { status: 201 }
@@ -55,7 +50,6 @@ export async function POST(req) {
   } catch (error) {
     console.error("Error in signup route:", error);
 
-    // Check for specific Prisma errors, e.g., unique constraint violations
     if (error.code === 'P2002') {
       return new Response(
         JSON.stringify({ message: 'A user with this email already exists.' }),
@@ -63,7 +57,6 @@ export async function POST(req) {
       );
     }
 
-    // General error handling
     return new Response(
       JSON.stringify({ message: 'Internal server error' }),
       { status: 500 }

@@ -1,4 +1,3 @@
-// pages/signup.js
 'use client'
 
 import LoginForm from "@/components/LoginForm.";

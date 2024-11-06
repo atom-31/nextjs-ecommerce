@@ -21,20 +21,17 @@ export default function ProductCard({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Ensure this is true only on the client side
+    setIsMounted(true);
   }, []);
 
   const handleAddToCart = async () => {
-    // Wait until session data is fully loaded and component is mounted
     if (status === 'loading' || !isMounted) return;
 
     if (!session) {
-      // Redirect to login if not logged in
       router.push('/login');
       return;
     }
 
-    // Call API to add product to cart
     try {
       const response = await fetch('/api/cart', {
         method: 'POST',

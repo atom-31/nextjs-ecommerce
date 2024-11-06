@@ -6,7 +6,6 @@ import Breadcrumb from '../../components/Breadcrumb';
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
 
-  // Fetch categories from the API
   useEffect(() => {
     fetch('https://fakestoreapi.com/products/categories')
       .then((res) => res.json())

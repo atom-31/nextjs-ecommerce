@@ -1,4 +1,3 @@
-// components/Banner.js
 'use client';
 import { useEffect, useState } from 'react';
 
