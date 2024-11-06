@@ -16,16 +16,19 @@ export default function ProductCard({
   buttonText = "Add To Cart",
   showDiscount = "no",
 }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Ensure this is true only on client side
+    setIsMounted(true); // Ensure this is true only on the client side
   }, []);
 
   const handleAddToCart = async () => {
-    if (!session && isMounted) {
+    // Wait until session data is fully loaded and component is mounted
+    if (status === 'loading' || !isMounted) return;
+
+    if (!session) {
       // Redirect to login if not logged in
       router.push('/login');
       return;
@@ -41,19 +44,20 @@ export default function ProductCard({
         credentials: 'include', // Ensure cookies are sent
         body: JSON.stringify({ productId: id, quantity: 1 }),
       });
-  
-      // Log response status and headers
+
       console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-  
-      // Try to parse the response as JSON
-      const data = await response.json();
-      console.log('Response data:', data);
-  
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        console.error('Failed to parse response JSON.');
+      }
+
       if (response.ok) {
         alert('Product added to cart!');
       } else {
-        alert(data.message || 'Failed to add product to cart.');
+        alert(data?.message || 'Failed to add product to cart.');
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -79,7 +83,7 @@ export default function ProductCard({
           <button className="bg-gray-200 p-1 rounded-full shadow hover:scale-105">
             <img src="/images/heart.svg" alt="Heart" className="w-7 h-7" />
           </button>
-          <Link href={`/product/${id}`} className="bg-gray-200 p-1 rounded-full shadow hover:scale-105" >
+          <Link href={`/product/${id}`} className="bg-gray-200 p-1 rounded-full shadow hover:scale-105">
             <img src="/images/eye.svg" alt="Eye" className="w-7 h-7" />
           </Link>
         </div>

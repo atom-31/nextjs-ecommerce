@@ -77,7 +77,7 @@ model Address {
 model Cart {
   id        String   @id @default(uuid())
   userId    String
-  productId String
+  productId Int
   quantity  Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
