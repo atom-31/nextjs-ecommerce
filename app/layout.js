@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Poppins } from 'next/font/google';
 import Providers from '@/components/Providers';
+import Banner from '@/components/Banner';
 
 
 const poppins = Poppins({
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`bg-white text-black ${poppins.className}`}>
   <Providers  >
+      <Banner />
         <Header />
         <main className='pr-24 pl-24'>{children}</main>
         <Footer />
