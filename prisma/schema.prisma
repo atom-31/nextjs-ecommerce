@@ -1,0 +1,41 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String?
+  email          String   @unique
+  password       String   // Add this line
+  emailVerified  DateTime?
+  image          String?
+  street         String?  // Optional street address
+  city           String?  // Optional city
+  state          String?  // Optional state
+  postalCode     String?  // Optional postal code
+  country        String?  // Optional country
+  cart           Cart[]
+  wishlist       Wishlist[]
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
